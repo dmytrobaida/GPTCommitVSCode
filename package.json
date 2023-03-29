@@ -2,7 +2,7 @@
   "name": "gpt-commit",
   "displayName": "GPT Commit",
   "description": "VS Code extension to generate AI commit messages using ChatGPT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/dmytrobaida/GPTCommitVSCode#readme",
   "bugs": "https://github.com/dmytrobaida/GPTCommitVSCode/issues",
   "repository": {
