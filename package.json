@@ -1,0 +1,79 @@
+{
+  "name": "gpt-commit",
+  "displayName": "GPT Commit",
+  "description": "VS Code extension to generate AI commit messages using ChatGPT",
+  "version": "1.0.0",
+  "homepage": "https://github.com/dmytrobaida/GPTCommitVSCode#readme",
+  "bugs": "https://github.com/dmytrobaida/GPTCommitVSCode/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dmytrobaida/GPTCommitVSCode"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.76.0"
+  },
+  "publisher": "DmytroBaida",
+  "categories": [
+    "Other",
+    "SCM Providers"
+  ],
+  "keywords": ["Commit", "AI", "ChatGPT", "GPT", "git", "repository"],
+  "icon": "assets/images/icon256.png",
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gptcommit.generateAICommit",
+        "title": "Generate AI commit",
+        "icon": {
+          "dark": "assets/icons/commit-dark.svg",
+          "light": "assets/icons/commit-light.svg"
+        }
+      }
+    ],
+    "menus": {
+      "scm/title": [
+        {
+          "command": "gptcommit.generateAICommit",
+          "when": "scmProvider == git",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "GPT Commit",
+      "properties": {
+        "gptcommit.openAI.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Needed for generating AI commit messages"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "build": "npm run esbuild-base -- --sourcemap",
+    "watch": "npm run esbuild-base -- --sourcemap --watch",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.76.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "@vscode/test-electron": "^2.3.0",
+    "esbuild": "^0.17.14",
+    "eslint": "^8.36.0",
+    "glob": "^8.1.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "execa": "^7.1.1",
+    "openai": "^3.2.1"
+  }
+}
