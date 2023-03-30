@@ -2,7 +2,7 @@
   "name": "gpt-commit",
   "displayName": "GPT Commit",
   "description": "VS Code extension which helps to generate AI commit messages using ChatGPT",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "https://github.com/dmytrobaida/GPTCommitVSCode#readme",
   "bugs": "https://github.com/dmytrobaida/GPTCommitVSCode/issues",
   "repository": {
@@ -18,7 +18,14 @@
     "Other",
     "SCM Providers"
   ],
-  "keywords": ["Commit", "AI", "ChatGPT", "GPT", "git", "repository"],
+  "keywords": [
+    "Commit",
+    "AI",
+    "ChatGPT",
+    "GPT",
+    "git",
+    "repository"
+  ],
   "icon": "assets/images/icon256.png",
   "activationEvents": [],
   "main": "./out/extension.js",
@@ -49,6 +56,11 @@
           "type": "string",
           "default": "",
           "description": "Needed for generating AI commit messages"
+        },
+        "gptcommit.appearance.delimeter": {
+          "type": "string",
+          "default": "*",
+          "description": "Delimeter between commit lines"
         }
       }
     }

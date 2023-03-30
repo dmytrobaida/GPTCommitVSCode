@@ -7,10 +7,12 @@
 import { Configuration, OpenAIApi } from 'openai';
 
 import { generateCommitMessageChatCompletionPrompt } from './completion';
+import { trimNewLines } from './text';
 
 export const generateCommitMessage = async (
     apiKey: string,
     diff: string,
+    delimeter?: string,
 ) => {
     const messages = generateCommitMessageChatCompletionPrompt(diff);
 
@@ -29,6 +31,12 @@ export const generateCommitMessage = async (
     );
 
     const message = data?.choices[0].message;
+    const commitMessage = message?.content;
 
-    return message?.content;
+    if (commitMessage) {
+        const alignedCommitMessage = trimNewLines(commitMessage, delimeter);
+        return alignedCommitMessage;
+    }
+
+    return;
 };

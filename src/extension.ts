@@ -29,6 +29,15 @@ async function setOpenAiApiKey(apiKey: string) {
 	await configuration.update('openAI.apiKey', apiKey, vscode.ConfigurationTarget.Global);
 }
 
+function getDelimeter() {
+	const configuration = vscode.workspace.getConfiguration('gptcommit');
+	const delimeter = configuration.get<string>('appearance.delimeter');
+	if (delimeter?.trim() === '') {
+		return;
+	}
+	return delimeter;
+}
+
 async function setRepositoryCommitMessage(commitMessage: string) {
 	const gitApi = await getGitApi();
 	const respository = gitApi?.repositories[0];
@@ -56,7 +65,8 @@ async function generateAICommitCommand() {
 		await setOpenAiApiKey(apiKey);
 	}
 
-	const commitMessage = await generateAICommitMessage(apiKey);
+	const delimeter = getDelimeter();
+	const commitMessage = await generateAICommitMessage(apiKey, delimeter);
 
 	if (!commitMessage) {
 		return;

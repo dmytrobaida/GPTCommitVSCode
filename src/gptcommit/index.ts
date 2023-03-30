@@ -10,7 +10,7 @@ import { assertGitRepo, getStagedDiff } from "./utils/git";
 import { generateCommitMessage } from './utils/openai';
 import { runTaskWithTimeout } from './utils/timer';
 
-async function generateAICommitMessage(apiKey: string) {
+async function generateAICommitMessage(apiKey: string, delimeter?: string) {
     try {
         const assertResult = await assertGitRepo();
 
@@ -40,6 +40,7 @@ async function generateAICommitMessage(apiKey: string) {
             const commitMessage = await generateCommitMessage(
                 apiKey,
                 staged.diff,
+                delimeter
             );
 
             return commitMessage;
