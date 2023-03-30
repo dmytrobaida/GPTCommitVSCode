@@ -13,9 +13,10 @@ export const assertGitRepo = async () => {
     const { stdout } = await execa('git', ['rev-parse', '--is-inside-work-tree'], { reject: false, cwd: cwd });
 
     if (stdout !== 'true') {
-        vscode.window.showErrorMessage('The current directory must be a Git repository!');
-        return;
+        return false;
     }
+
+    return true;
 };
 
 const excludeFromDiff = (path: string) => `:(exclude)${path}`;
