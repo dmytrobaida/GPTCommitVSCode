@@ -5,7 +5,6 @@
  */
 
 import { Configuration, OpenAIApi } from 'openai';
-import * as vscode from 'vscode';
 
 import { generateCommitMessageChatCompletionPrompt } from './completion';
 
@@ -19,28 +18,17 @@ export const generateCommitMessage = async (
         apiKey: apiKey
     }));
 
-    try {
-        const { data } = await openAI.createChatCompletion(
-            {
-                model: 'gpt-3.5-turbo',
-                messages: messages,
-                temperature: 0,
-                ['top_p']: 0.1,
-                ['max_tokens']: 196
-            }
-        );
-
-        const message = data?.choices[0].message;
-
-        return message?.content;
-    } catch (error: any) {
-        const errorMessage = error?.response?.data?.error?.message;
-
-        if (errorMessage) {
-            vscode.window.showErrorMessage(errorMessage);
-            return;
+    const { data } = await openAI.createChatCompletion(
+        {
+            model: 'gpt-3.5-turbo',
+            messages: messages,
+            temperature: 0,
+            ['top_p']: 0.1,
+            ['max_tokens']: 196
         }
+    );
 
-        throw error;
-    }
+    const message = data?.choices[0].message;
+
+    return message?.content;
 };

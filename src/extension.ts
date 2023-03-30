@@ -24,6 +24,11 @@ function getOpenAiApiKey() {
 	return apiKey;
 }
 
+async function setOpenAiApiKey(apiKey: string) {
+	const configuration = vscode.workspace.getConfiguration('gptcommit');
+	await configuration.update('openAI.apiKey', apiKey, vscode.ConfigurationTarget.Global);
+}
+
 async function setRepositoryCommitMessage(commitMessage: string) {
 	const gitApi = await getGitApi();
 	const respository = gitApi?.repositories[0];
@@ -36,11 +41,19 @@ async function setRepositoryCommitMessage(commitMessage: string) {
 }
 
 async function generateAICommitCommand() {
-	const apiKey = getOpenAiApiKey();
+	let apiKey = getOpenAiApiKey();
 
 	if (!apiKey) {
-		vscode.window.showErrorMessage('You should set OpenAi Api Key in settings!');
-		return;
+		apiKey = await vscode.window.showInputBox({
+			title: 'Please enter your OpenAi API Key',
+		});
+
+		if (!apiKey || apiKey.trim() === '') {
+			vscode.window.showErrorMessage('You should set OpenAi API Key before extension using!');
+			return;
+		}
+
+		await setOpenAiApiKey(apiKey);
 	}
 
 	const commitMessage = await generateAICommitMessage(apiKey);
