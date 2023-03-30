@@ -43,19 +43,7 @@ async function generateAICommitCommand() {
 		return;
 	}
 
-	const commitMessage = await vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: false,
-		title: 'Generating AI Commit message',
-	}, async (progress) => {
-		progress.report({ increment: 50 });
-
-		const commitMessage = await generateAICommitMessage(apiKey);
-
-		progress.report({ increment: 100 });
-
-		return commitMessage;
-	});
+	const commitMessage = await generateAICommitMessage(apiKey);
 
 	if (!commitMessage) {
 		return;

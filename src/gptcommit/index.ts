@@ -8,9 +8,15 @@ import * as vscode from 'vscode';
 
 import { assertGitRepo, getStagedDiff } from "./utils/git";
 import { generateCommitMessage } from './utils/openai';
+import { runTaskWithTimeout } from './utils/timer';
 
 async function generateAICommitMessage(apiKey: string) {
-    await assertGitRepo();
+    const assertResult = await assertGitRepo();
+
+    if (!assertResult) {
+        vscode.window.showErrorMessage('The current directory must be a Git repository!');
+        return;
+    }
 
     const staged = await getStagedDiff();
 
@@ -19,25 +25,39 @@ async function generateAICommitMessage(apiKey: string) {
         return;
     }
 
-    let message = await generateCommitMessage(
-        apiKey,
-        staged.diff,
-    );
+    const commitMessage = await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        cancellable: false,
+        title: 'Generating AI Commit message',
+    }, async (progress) => {
+        let increment = 0;
 
-    if (!message) {
+        runTaskWithTimeout(() => {
+            progress.report({ increment: increment += 1 });
+        }, 5000, 200);
+
+        const commitMessage = await generateCommitMessage(
+            apiKey,
+            staged.diff,
+        );
+
+        return commitMessage;
+    });
+
+    if (!commitMessage) {
         vscode.window.showErrorMessage('No commit message were generated. Try again.');
         return;
     }
 
     const result = await vscode.window.showQuickPick(['Yes', 'No'], {
-        title: `Use this commit message?\n\n   ${message}\n`,
+        title: `Use this commit message?: ${commitMessage}`,
     });
 
     if (result !== 'Yes') {
         return;
     }
 
-    return message;
+    return commitMessage;
 };
 
 export default generateAICommitMessage;
