@@ -1,6 +1,6 @@
 # GPT Commit
 
-VS Code extension to generate AI commit messages using ChatGPT.
+VS Code extension which helps to generate AI commit messages using ChatGPT.
 
 ## Features
 
