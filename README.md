@@ -20,20 +20,24 @@ You can get your API key from [OpenAI](https://platform.openai.com/account/api-k
 GPT Commit extension contributes the following settings:
 
 * `gptcommit.openAI.apiKey`: OpenAI API Key. Needed for generating AI commit messages
+* `gptcommit.appearance.delimeter`: Delimeter between commit lines
 
 ## Release Notes
 
 ### 1.0.0
-
 Initial release of GPT Commit
 
 ### 1.0.1
-
 Updated icons
 
 ### 1.0.2
-
 Fixed UX
+
+### 1.0.3
+Added Open AI API Key input prompt
+
+### 1.0.4
+Updated commit formatting. Added new setting
 
 ## License
 
