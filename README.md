@@ -27,6 +27,14 @@ GPT Commit extension contributes the following settings:
 
 Initial release of GPT Commit
 
+### 1.0.1
+
+Updated icons
+
+### 1.0.2
+
+Fixed UX
+
 ## License
 
 Released under [MIT](/LICENSE) by [@dmytrobaida](https://github.com/dmytrobaida).
