@@ -11,13 +11,15 @@ import { trimNewLines } from './text';
 
 export const generateCommitMessage = async (
     apiKey: string,
+    apiEndpoint: string | undefined,
     diff: string,
     delimeter?: string,
 ) => {
     const messages = generateCommitMessageChatCompletionPrompt(diff);
 
     const openAI = new OpenAIApi(new Configuration({
-        apiKey: apiKey
+        apiKey: apiKey,
+        basePath: apiEndpoint,
     }));
 
     const { data } = await openAI.createChatCompletion(

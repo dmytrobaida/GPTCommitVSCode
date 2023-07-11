@@ -24,6 +24,12 @@ function getOpenAiApiKey() {
 	return apiKey;
 }
 
+function getOpenAiApiEndpoint() {
+	const configuration = vscode.workspace.getConfiguration('gptcommit');
+	const apiEndpoint = configuration.get<string>('openAI.apiEndpoint');
+	return apiEndpoint;
+}
+
 async function setOpenAiApiKey(apiKey: string) {
 	const configuration = vscode.workspace.getConfiguration('gptcommit');
 	await configuration.update('openAI.apiKey', apiKey, vscode.ConfigurationTarget.Global);
@@ -51,6 +57,7 @@ async function setRepositoryCommitMessage(commitMessage: string) {
 
 async function generateAICommitCommand() {
 	let apiKey = getOpenAiApiKey();
+	const apiEndpoint = getOpenAiApiEndpoint();
 
 	if (!apiKey) {
 		apiKey = await vscode.window.showInputBox({
@@ -66,7 +73,7 @@ async function generateAICommitCommand() {
 	}
 
 	const delimeter = getDelimeter();
-	const commitMessage = await generateAICommitMessage(apiKey, delimeter);
+	const commitMessage = await generateAICommitMessage(apiKey, apiEndpoint, delimeter);
 
 	if (!commitMessage) {
 		return;
