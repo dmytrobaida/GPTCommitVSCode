@@ -2,7 +2,7 @@
   "name": "gpt-commit",
   "displayName": "GPT Commit",
   "description": "VS Code extension which helps to generate AI commit messages using ChatGPT",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "homepage": "https://github.com/dmytrobaida/GPTCommitVSCode#readme",
   "bugs": "https://github.com/dmytrobaida/GPTCommitVSCode/issues",
   "repository": {
@@ -56,6 +56,11 @@
           "type": "string",
           "default": "",
           "description": "Needed for generating AI commit messages"
+        },
+        "gptcommit.openAI.apiEndpoint": {
+          "type": "string",
+          "default": "https://api.openai.com/v1",
+          "description": "Custom API endpoint for OpenAI"
         },
         "gptcommit.appearance.delimeter": {
           "type": "string",
