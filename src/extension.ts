@@ -1,83 +1,20 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import generateAICommitMessage from './gptcommit';
-
-async function getGitApi() {
-	const gitEntension = vscode.extensions.getExtension('vscode.git');
-
-	if (!gitEntension) {
-		return;
-	}
-
-	if (!gitEntension.isActive) {
-		await gitEntension.activate();
-	}
-
-	const gitApi = gitEntension.exports?.getAPI(1);
-
-	return gitApi;
-}
-
-function getOpenAiApiKey() {
-	const configuration = vscode.workspace.getConfiguration('gptcommit');
-	const apiKey = configuration.get<string>('openAI.apiKey');
-	return apiKey;
-}
-
-async function setOpenAiApiKey(apiKey: string) {
-	const configuration = vscode.workspace.getConfiguration('gptcommit');
-	await configuration.update('openAI.apiKey', apiKey, vscode.ConfigurationTarget.Global);
-}
-
-function getDelimeter() {
-	const configuration = vscode.workspace.getConfiguration('gptcommit');
-	const delimeter = configuration.get<string>('appearance.delimeter');
-	if (delimeter?.trim() === '') {
-		return;
-	}
-	return delimeter;
-}
-
-async function setRepositoryCommitMessage(commitMessage: string) {
-	const gitApi = await getGitApi();
-	const respository = gitApi?.repositories[0];
-
-	if (!respository) {
-		return;
-	}
-
-	respository.inputBox.value = commitMessage;
-}
-
-async function generateAICommitCommand() {
-	let apiKey = getOpenAiApiKey();
-
-	if (!apiKey) {
-		apiKey = await vscode.window.showInputBox({
-			title: 'Please enter your OpenAi API Key',
-		});
-
-		if (!apiKey || apiKey.trim() === '') {
-			vscode.window.showErrorMessage('You should set OpenAi API Key before extension using!');
-			return;
-		}
-
-		await setOpenAiApiKey(apiKey);
-	}
-
-	const delimeter = getDelimeter();
-	const commitMessage = await generateAICommitMessage(apiKey, delimeter);
-
-	if (!commitMessage) {
-		return;
-	}
-
-	await setRepositoryCommitMessage(commitMessage);
-}
+import { generateAiCommitCommand, setOpenaiApiKey } from "@commands";
 
 export function activate(context: vscode.ExtensionContext) {
-	let disposable = vscode.commands.registerCommand('gptcommit.generateAICommit', generateAICommitCommand);
-	context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "gptcommit.generateAICommit",
+      generateAiCommitCommand
+    )
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "gptcommit.setOpenAIApiKey",
+      setOpenaiApiKey
+    )
+  );
 }
 
-export function deactivate() { }
+export function deactivate() {}

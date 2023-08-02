@@ -38,6 +38,10 @@
           "dark": "assets/icons/commit-dark.svg",
           "light": "assets/icons/commit-light.svg"
         }
+      },
+      {
+        "command": "gptcommit.setOpenAIApiKey",
+        "title": "Set OpenAI API key"
       }
     ],
     "menus": {
@@ -88,6 +92,7 @@
   },
   "dependencies": {
     "execa": "^7.1.1",
-    "openai": "^3.2.1"
+    "openai": "^3.2.1",
+    "zod": "^3.21.4"
   }
 }
