@@ -12,6 +12,7 @@ import {
 } from "openai";
 
 import { trimNewLines } from "@utils/text";
+import { Configuration as AppConfiguration } from "@utils/configuration";
 
 import { MsgGenerator } from "./msg-generator";
 
@@ -65,21 +66,26 @@ function generateCommitMessageChatCompletionPrompt(
   return chatContextAsCompletionRequest;
 }
 
+const defaultModel = "gpt-3.5-turbo";
+
 export class ChatgptMsgGenerator implements MsgGenerator {
   openAI: OpenAIApi;
+  config?: AppConfiguration["openAI"];
 
-  constructor(apiKey: string) {
+  constructor(config: AppConfiguration["openAI"]) {
     this.openAI = new OpenAIApi(
       new Configuration({
-        apiKey: apiKey,
-      })
+        apiKey: config.apiKey,
+      }),
+      config.customUrl?.trim() || undefined
     );
+    this.config = config;
   }
 
   async generate(diff: string, delimeter?: string) {
     const messages = generateCommitMessageChatCompletionPrompt(diff);
     const { data } = await this.openAI.createChatCompletion({
-      model: "gpt-3.5-turbo",
+      model: this.config?.gptVersion || defaultModel,
       messages: messages,
       temperature: 0,
       ["top_p"]: 0.1,

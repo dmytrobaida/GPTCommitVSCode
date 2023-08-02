@@ -1,11 +1,19 @@
 import * as vscode from "vscode";
 
-import Configuration from "@utils/configuration";
+import { getConfiguration } from "@utils/configuration";
 import { GitExtension } from "@gptcommit/scm/types";
 import { GitCommitMessageWriter, VscodeGitDiffProvider } from "@gptcommit/scm";
 import { GenerateCompletionFlow } from "@flows";
 import { ChatgptMsgGenerator } from "@gptcommit/commit-msg-gen";
 import { runTaskWithTimeout } from "@utils/timer";
+
+function isValidApiKey() {
+  const configuration = getConfiguration();
+  return (
+    configuration.openAI.apiKey != null &&
+    configuration.openAI.apiKey.trim().length > 0
+  );
+}
 
 export async function generateAiCommitCommand() {
   try {
@@ -21,21 +29,20 @@ export async function generateAiCommitCommand() {
       await gitExtension.activate();
     }
 
-    let apiKey = Configuration.openAI.apiKey;
-
-    if (!apiKey) {
-      apiKey = await vscode.commands.executeCommand("setOpenaiApiKey");
+    if (!isValidApiKey()) {
+      await vscode.commands.executeCommand("setOpenaiApiKey");
     }
 
-    if (!apiKey) {
+    if (!isValidApiKey()) {
       vscode.window.showErrorMessage(
         "You should set OpenAi API Key before using extension!"
       );
       return;
     }
 
+    const configuration = getConfiguration();
     const commitMessageWriter = new GitCommitMessageWriter(gitExtension);
-    const messageGenerator = new ChatgptMsgGenerator(apiKey);
+    const messageGenerator = new ChatgptMsgGenerator(configuration.openAI);
     const diffProvider = new VscodeGitDiffProvider(gitExtension);
 
     const generateCompletionFlow = new GenerateCompletionFlow(
@@ -52,7 +59,7 @@ export async function generateAiCommitCommand() {
       }
     );
 
-    const delimeter = Configuration.appearance.delimeter;
+    const delimeter = configuration.appearance.delimeter;
 
     await vscode.window.withProgress(
       {

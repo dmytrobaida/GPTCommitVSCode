@@ -1,31 +1,44 @@
 import { z } from "zod";
 import * as vscode from "vscode";
 
-const configuration = vscode.workspace.getConfiguration("gptcommit");
+import { DeepKey } from "./types";
 
 const configurationSchema = z.object({
   openAI: z.object({
     apiKey: z.string().optional(),
+    gptVersion: z
+      .enum([
+        "gpt-4",
+        "gpt-4-0613",
+        "gpt-4-32k",
+        "gpt-4-32k-0613",
+        "gpt-3.5-turbo",
+        "gpt-3.5-turbo-0613",
+        "gpt-3.5-turbo-16k",
+        "gpt-3.5-turbo-16k-0613",
+      ])
+      .optional(),
+    customUrl: z.string().optional(),
   }),
   appearance: z.object({
     delimeter: z.string().optional(),
   }),
+  general: z.object({
+    generator: z.enum(["ChatGPT", "Custom"]).optional(),
+  }),
 });
 
-type Configuration = z.infer<typeof configurationSchema>;
+export type Configuration = z.infer<typeof configurationSchema>;
 
-type DeepKey<T> = T extends object
-  ? {
-      [K in keyof T]-?: `${K & string}${T[K] extends object
-        ? "."
-        : ""}${DeepKey<T[K]>}`;
-    }[keyof T]
-  : "";
-
-type ConfigurationKey = DeepKey<Configuration>;
-
-export async function setConfigurationValue(key: ConfigurationKey, value: any) {
+export async function setConfigurationValue(
+  key: DeepKey<Configuration>,
+  value: any
+) {
+  const configuration = vscode.workspace.getConfiguration("gptcommit");
   await configuration.update(key, value, vscode.ConfigurationTarget.Global);
 }
 
-export default configurationSchema.parse(configuration);
+export function getConfiguration() {
+  const configuration = vscode.workspace.getConfiguration("gptcommit");
+  return configurationSchema.parse(configuration);
+}

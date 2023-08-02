@@ -56,10 +56,39 @@
     "configuration": {
       "title": "GPT Commit",
       "properties": {
+        "gptcommit.general.generator": {
+          "type": "string",
+          "enum": [
+            "ChatGPT",
+            "Custom"
+          ],
+          "default": "ChatGPT",
+          "description": "Generator used to create commit messages"
+        },
         "gptcommit.openAI.apiKey": {
           "type": "string",
           "default": "",
           "description": "Needed for generating AI commit messages"
+        },
+        "gptcommit.openAI.gptVersion": {
+          "type": "string",
+          "enum": [
+            "gpt-4",
+            "gpt-4-0613",
+            "gpt-4-32k",
+            "gpt-4-32k-0613",
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-0613",
+            "gpt-3.5-turbo-16k",
+            "gpt-3.5-turbo-16k-0613"
+          ],
+          "default": "gpt-3.5-turbo",
+          "description": "Version of GPT used by OpenAI"
+        },
+        "gptcommit.openAI.customUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Custom endpoint URL for OpenAI API"
         },
         "gptcommit.appearance.delimeter": {
           "type": "string",
@@ -92,7 +121,7 @@
   },
   "dependencies": {
     "execa": "^7.1.1",
-    "openai": "^3.2.1",
+    "openai": "^3.3.0",
     "zod": "^3.21.4"
   }
 }
