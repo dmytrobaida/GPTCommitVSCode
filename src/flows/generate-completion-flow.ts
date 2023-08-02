@@ -27,7 +27,7 @@ export class GenerateCompletionFlow
     const diff = await this.diffProvider.getStagedDiff();
 
     if (!diff || diff.trim() === "") {
-      await this.onError(
+      this.onError(
         "No staged changes found. Make sure to stage your changes with `git add`."
       );
       return;
@@ -39,14 +39,14 @@ export class GenerateCompletionFlow
     );
 
     if (!commitMessage) {
-      await this.onError("No commit message were generated. Try again.");
+      this.onError("No commit message were generated. Try again.");
       return;
     }
 
     const result = await this.onSelectMessage(commitMessage);
 
     if (!result) {
-      await this.onError("User rejected commit message.");
+      this.onError("User rejected commit message.");
       return;
     }
 

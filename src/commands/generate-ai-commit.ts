@@ -78,13 +78,11 @@ export async function generateAiCommitCommand() {
     const errorMessage = error?.response?.data?.error?.message;
 
     if (errorMessage) {
-      await vscode.window.showErrorMessage(errorMessage);
+      vscode.window.showErrorMessage(errorMessage);
       return;
     }
 
-    await vscode.window.showErrorMessage(
-      "Something went wrong. Please try again."
-    );
+    vscode.window.showErrorMessage("Something went wrong. Please try again.");
     return;
   }
 }
