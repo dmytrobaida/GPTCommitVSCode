@@ -4,6 +4,13 @@ import * as vscode from "vscode";
 import { DeepKey } from "./types";
 
 const configurationSchema = z.object({
+  appearance: z.object({
+    delimeter: z.string().optional(),
+  }),
+  general: z.object({
+    generator: z.enum(["ChatGPT", "Custom"]).optional(),
+    messageApproveMethod: z.enum(["Quick pick", "Message file"]).optional(),
+  }),
   openAI: z.object({
     apiKey: z.string().optional(),
     gptVersion: z
@@ -18,13 +25,9 @@ const configurationSchema = z.object({
         "gpt-3.5-turbo-16k-0613",
       ])
       .optional(),
-    customUrl: z.string().optional(),
-  }),
-  appearance: z.object({
-    delimeter: z.string().optional(),
-  }),
-  general: z.object({
-    generator: z.enum(["ChatGPT", "Custom"]).optional(),
+    customEndpoint: z.string().optional(),
+    temperature: z.number().optional(),
+    maxTokens: z.number().optional(),
   }),
 });
 

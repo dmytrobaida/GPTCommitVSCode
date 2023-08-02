@@ -16,7 +16,11 @@ export class GenerateCompletionFlow
     private readonly diffProvider: DiffProvider,
     private readonly commitMessageWriter: CommitMessageWriter,
     private readonly onError: (message: string) => Thenable<any>,
-    private readonly onSelectMessage: (message: string) => Promise<boolean>
+    private readonly onSelectMessage: (message: string) => Promise<{
+      result: boolean;
+      edited: boolean;
+      editedMessage?: string;
+    }>
   ) {}
 
   activate(): Promise<void> {
@@ -43,13 +47,19 @@ export class GenerateCompletionFlow
       return;
     }
 
-    const result = await this.onSelectMessage(commitMessage);
+    const { result, edited, editedMessage } = await this.onSelectMessage(
+      commitMessage
+    );
 
     if (!result) {
       this.onError("User rejected commit message.");
       return;
     }
 
-    await this.commitMessageWriter.write(commitMessage);
+    if (edited && editedMessage != null && editedMessage.trim() !== "") {
+      await this.commitMessageWriter.write(editedMessage);
+    } else {
+      await this.commitMessageWriter.write(commitMessage);
+    }
   }
 }

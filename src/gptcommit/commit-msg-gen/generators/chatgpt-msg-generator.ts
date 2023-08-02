@@ -67,6 +67,8 @@ function generateCommitMessageChatCompletionPrompt(
 }
 
 const defaultModel = "gpt-3.5-turbo";
+const defaultTemperature = 0.2;
+const defaultMaxTokens = 196;
 
 export class ChatgptMsgGenerator implements MsgGenerator {
   openAI: OpenAIApi;
@@ -77,7 +79,7 @@ export class ChatgptMsgGenerator implements MsgGenerator {
       new Configuration({
         apiKey: config.apiKey,
       }),
-      config.customUrl?.trim() || undefined
+      config.customEndpoint?.trim() || undefined
     );
     this.config = config;
   }
@@ -87,9 +89,8 @@ export class ChatgptMsgGenerator implements MsgGenerator {
     const { data } = await this.openAI.createChatCompletion({
       model: this.config?.gptVersion || defaultModel,
       messages: messages,
-      temperature: 0,
-      ["top_p"]: 0.1,
-      ["max_tokens"]: 196,
+      temperature: this.config?.temperature || defaultTemperature,
+      ["max_tokens"]: this.config?.maxTokens || defaultMaxTokens,
     });
 
     const message = data?.choices[0].message;

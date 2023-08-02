@@ -1,4 +1,7 @@
 import * as vscode from "vscode";
+import { randomUUID } from "crypto";
+import { tmpdir } from "os";
+import * as path from "path";
 
 import { getConfiguration } from "@utils/configuration";
 import { GitExtension } from "@gptcommit/scm/types";
@@ -13,6 +16,59 @@ function isValidApiKey() {
     configuration.openAI.apiKey != null &&
     configuration.openAI.apiKey.trim().length > 0
   );
+}
+
+async function openTempFileWithMessage(message: string) {
+  const uid = randomUUID();
+  const tempMessageFile = path.join(tmpdir(), `vscode-gptcommit-${uid}.txt`);
+
+  await vscode.workspace.fs.writeFile(
+    vscode.Uri.file(tempMessageFile),
+    Buffer.from(message, "utf8")
+  );
+
+  const document = await vscode.workspace.openTextDocument(tempMessageFile);
+
+  await vscode.window.showTextDocument(document, {
+    preview: false,
+  });
+
+  let saveHandler: vscode.Disposable | undefined;
+  let closeHandler: vscode.Disposable | undefined;
+
+  const result = await new Promise<{
+    result: boolean;
+    edited: boolean;
+    editedMessage?: string;
+  }>((resolve) => {
+    saveHandler = vscode.workspace.onDidSaveTextDocument((doc) => {
+      if (doc.fileName === tempMessageFile) {
+        resolve({
+          result: true,
+          edited: true,
+          editedMessage: doc.getText(),
+        });
+      }
+    });
+
+    closeHandler = vscode.window.onDidChangeVisibleTextEditors((editors) => {
+      if (
+        editors.every((editor) => editor.document.fileName !== tempMessageFile)
+      ) {
+        resolve({
+          result: false,
+          edited: false,
+        });
+      }
+    });
+  });
+
+  saveHandler?.dispose();
+  closeHandler?.dispose();
+
+  await vscode.workspace.fs.delete(vscode.Uri.file(tempMessageFile));
+
+  return result;
 }
 
 export async function generateAiCommitCommand() {
@@ -51,11 +107,28 @@ export async function generateAiCommitCommand() {
       commitMessageWriter,
       vscode.window.showErrorMessage,
       async (message) => {
-        const result = await vscode.window.showQuickPick(["Yes", "No"], {
-          title: `Use this commit message?: ${message}`,
-        });
+        switch (configuration.general.messageApproveMethod) {
+          case "Quick pick":
+            const quickPickResult = await vscode.window.showQuickPick(
+              ["Yes", "No"],
+              {
+                title: `Use this commit message?: ${message}`,
+              }
+            );
 
-        return result === "Yes";
+            return {
+              result: quickPickResult === "Yes",
+              edited: false,
+            };
+          case "Message file":
+            const openFileResult = await openTempFileWithMessage(message);
+            return openFileResult;
+          default:
+            return {
+              result: true,
+              edited: false,
+            };
+        }
       }
     );
 

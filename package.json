@@ -56,6 +56,11 @@
     "configuration": {
       "title": "GPT Commit",
       "properties": {
+        "gptcommit.appearance.delimeter": {
+          "type": "string",
+          "default": "*",
+          "description": "Delimeter between commit lines"
+        },
         "gptcommit.general.generator": {
           "type": "string",
           "enum": [
@@ -64,6 +69,15 @@
           ],
           "default": "ChatGPT",
           "description": "Generator used to create commit messages"
+        },
+        "gptcommit.general.messageApproveMethod": {
+          "type": "string",
+          "enum": [
+            "Quick pick",
+            "Message file"
+          ],
+          "default": "Quick pick",
+          "description": "Method used to approve generated commit messages"
         },
         "gptcommit.openAI.apiKey": {
           "type": "string",
@@ -85,15 +99,20 @@
           "default": "gpt-3.5-turbo",
           "description": "Version of GPT used by OpenAI"
         },
-        "gptcommit.openAI.customUrl": {
+        "gptcommit.openAI.customEndpoint": {
           "type": "string",
           "default": "",
           "description": "Custom endpoint URL for OpenAI API"
         },
-        "gptcommit.appearance.delimeter": {
-          "type": "string",
-          "default": "*",
-          "description": "Delimeter between commit lines"
+        "gptcommit.openAI.temperature": {
+          "type": "number",
+          "default": 0.2,
+          "description": "Controls randomness. Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive"
+        },
+        "gptcommit.openAI.maxTokens": {
+          "type": "number",
+          "default": 196,
+          "description": "The maximum number of tokens to generate. Requests can use up to 2048 tokens shared between prompt and completion"
         }
       }
     }
