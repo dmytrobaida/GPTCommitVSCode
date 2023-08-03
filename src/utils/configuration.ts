@@ -32,8 +32,8 @@ const configurationSchema = z.object({
         "gpt-3.5-turbo-16k",
         "gpt-3.5-turbo-16k-0613",
       ])
-      .default("gpt-3.5-turbo")
-      .catch("gpt-3.5-turbo")
+      .default("gpt-3.5-turbo-16k")
+      .catch("gpt-3.5-turbo-16k")
       .optional(),
     customEndpoint: z.string().optional(),
     temperature: z.number().optional(),

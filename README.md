@@ -65,6 +65,7 @@ Added new option to accept and edit generated commit via temp message file. (Tha
 Added option to set custom ChatGPT endpoint URL. (Thanks for help [aiyogg](https://github.com/aiyogg))
 Fixed issue with git on windows (Issue [#5](https://github.com/dmytrobaida/GPTCommitVSCode/issues/5))
 Added option to select different ChatGPT version (Issue [#6](https://github.com/dmytrobaida/GPTCommitVSCode/issues/6))
+Set default ChatGPT version to gpt-3.5-turbo-16k
 
 ## License
 

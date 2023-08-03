@@ -95,7 +95,7 @@
             "gpt-3.5-turbo-16k",
             "gpt-3.5-turbo-16k-0613"
           ],
-          "default": "gpt-3.5-turbo",
+          "default": "gpt-3.5-turbo-16k",
           "description": "Version of GPT used by OpenAI"
         },
         "gptcommit.openAI.customEndpoint": {

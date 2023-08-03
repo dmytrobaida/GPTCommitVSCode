@@ -66,7 +66,7 @@ function generateCommitMessageChatCompletionPrompt(
   return chatContextAsCompletionRequest;
 }
 
-const defaultModel = "gpt-3.5-turbo";
+const defaultModel = "gpt-3.5-turbo-16k";
 const defaultTemperature = 0.2;
 const defaultMaxTokens = 196;
 
