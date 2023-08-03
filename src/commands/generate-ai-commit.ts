@@ -18,7 +18,7 @@ async function openTempFileWithMessage(message: string) {
 
   logToOutputChannel(`Opening temp file: ${tempMessageFile}`);
 
-  const explainingHeader = `# This is a generated commit message. You can edit it and save to approve it. #\n\n`;
+  const explainingHeader = `# This is a generated commit message. You can edit it and save to approve it #\n\n`;
   const tempFileContent = explainingHeader + message;
 
   await vscode.workspace.fs.writeFile(
