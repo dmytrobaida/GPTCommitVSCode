@@ -18,9 +18,12 @@ async function openTempFileWithMessage(message: string) {
 
   logToOutputChannel(`Opening temp file: ${tempMessageFile}`);
 
+  const explainingHeader = `# This is a generated commit message. You can edit it and save to approve it. #\n\n`;
+  const tempFileContent = explainingHeader + message;
+
   await vscode.workspace.fs.writeFile(
     vscode.Uri.file(tempMessageFile),
-    Buffer.from(message, "utf8")
+    Buffer.from(tempFileContent, "utf8")
   );
 
   const document = await vscode.workspace.openTextDocument(tempMessageFile);
@@ -39,10 +42,13 @@ async function openTempFileWithMessage(message: string) {
   }>((resolve) => {
     saveHandler = vscode.workspace.onDidSaveTextDocument((doc) => {
       if (doc.fileName === tempMessageFile) {
+        const editedText = doc.getText();
+        const editedMessage = editedText.replace(/#.*#.*\n/g, "").trim();
+
         resolve({
           result: true,
           edited: true,
-          editedMessage: doc.getText(),
+          editedMessage: editedMessage,
         });
       }
     });
