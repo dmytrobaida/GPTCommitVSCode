@@ -8,6 +8,21 @@
 		],
 		"sourceMap": true,
 		"rootDir": "src",
-		"strict": true
+		"baseUrl": "src",
+		"strict": true,
+		"paths": {
+			"@utils/*": [
+				"utils/*"
+			],
+			"@gptcommit/*": [
+				"gptcommit/*"
+			],
+			"@commands": [
+				"commands"
+			],
+			"@flows": [
+				"flows"
+			],
+		}
 	}
 }

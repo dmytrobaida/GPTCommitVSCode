@@ -2,7 +2,7 @@
   "name": "gpt-commit",
   "displayName": "GPT Commit",
   "description": "VS Code extension which helps to generate AI commit messages using ChatGPT",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "homepage": "https://github.com/dmytrobaida/GPTCommitVSCode#readme",
   "bugs": "https://github.com/dmytrobaida/GPTCommitVSCode/issues",
   "repository": {
@@ -38,6 +38,10 @@
           "dark": "assets/icons/commit-dark.svg",
           "light": "assets/icons/commit-light.svg"
         }
+      },
+      {
+        "command": "gptcommit.setOpenAIApiKey",
+        "title": "Set OpenAI API key"
       }
     ],
     "menus": {
@@ -52,15 +56,62 @@
     "configuration": {
       "title": "GPT Commit",
       "properties": {
+        "gptcommit.appearance.delimeter": {
+          "type": "string",
+          "default": "*",
+          "description": "Delimeter between commit lines"
+        },
+        "gptcommit.general.generator": {
+          "type": "string",
+          "enum": [
+            "ChatGPT"
+          ],
+          "default": "ChatGPT",
+          "description": "Generator used to create commit messages"
+        },
+        "gptcommit.general.messageApproveMethod": {
+          "type": "string",
+          "enum": [
+            "Quick pick",
+            "Message file"
+          ],
+          "default": "Quick pick",
+          "description": "Method used to approve generated commit messages"
+        },
         "gptcommit.openAI.apiKey": {
           "type": "string",
           "default": "",
           "description": "Needed for generating AI commit messages"
         },
-        "gptcommit.appearance.delimeter": {
+        "gptcommit.openAI.gptVersion": {
           "type": "string",
-          "default": "*",
-          "description": "Delimeter between commit lines"
+          "enum": [
+            "gpt-4",
+            "gpt-4-0613",
+            "gpt-4-32k",
+            "gpt-4-32k-0613",
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-0613",
+            "gpt-3.5-turbo-16k",
+            "gpt-3.5-turbo-16k-0613"
+          ],
+          "default": "gpt-3.5-turbo-16k",
+          "description": "Version of GPT used by OpenAI"
+        },
+        "gptcommit.openAI.customEndpoint": {
+          "type": "string",
+          "default": "",
+          "description": "Custom endpoint URL for OpenAI API"
+        },
+        "gptcommit.openAI.temperature": {
+          "type": "number",
+          "default": 0.2,
+          "description": "Controls randomness. Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive"
+        },
+        "gptcommit.openAI.maxTokens": {
+          "type": "number",
+          "default": 196,
+          "description": "The maximum number of tokens to generate. Requests can use up to 2048 tokens shared between prompt and completion"
         }
       }
     }
@@ -88,6 +139,7 @@
   },
   "dependencies": {
     "execa": "^7.1.1",
-    "openai": "^3.2.1"
+    "openai": "^3.3.0",
+    "zod": "^3.21.4"
   }
 }
