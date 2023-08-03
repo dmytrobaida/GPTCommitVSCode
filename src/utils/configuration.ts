@@ -8,8 +8,16 @@ const configurationSchema = z.object({
     delimeter: z.string().optional(),
   }),
   general: z.object({
-    generator: z.enum(["ChatGPT", "Custom"]).optional(),
-    messageApproveMethod: z.enum(["Quick pick", "Message file"]).optional(),
+    generator: z
+      .enum(["ChatGPT"])
+      .default("ChatGPT")
+      .catch("ChatGPT")
+      .optional(),
+    messageApproveMethod: z
+      .enum(["Quick pick", "Message file"])
+      .default("Quick pick")
+      .catch("Quick pick")
+      .optional(),
   }),
   openAI: z.object({
     apiKey: z.string().optional(),
@@ -24,6 +32,8 @@ const configurationSchema = z.object({
         "gpt-3.5-turbo-16k",
         "gpt-3.5-turbo-16k-0613",
       ])
+      .default("gpt-3.5-turbo")
+      .catch("gpt-3.5-turbo")
       .optional(),
     customEndpoint: z.string().optional(),
     temperature: z.number().optional(),

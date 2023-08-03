@@ -9,18 +9,14 @@ import { GitCommitMessageWriter, VscodeGitDiffProvider } from "@gptcommit/scm";
 import { GenerateCompletionFlow } from "@flows";
 import { ChatgptMsgGenerator } from "@gptcommit/commit-msg-gen";
 import { runTaskWithTimeout } from "@utils/timer";
-
-function isValidApiKey() {
-  const configuration = getConfiguration();
-  return (
-    configuration.openAI.apiKey != null &&
-    configuration.openAI.apiKey.trim().length > 0
-  );
-}
+import { logToOutputChannel } from "@utils/output";
+import { isValidApiKey } from "@utils/text";
 
 async function openTempFileWithMessage(message: string) {
   const uid = randomUUID();
   const tempMessageFile = path.join(tmpdir(), `vscode-gptcommit-${uid}.txt`);
+
+  logToOutputChannel(`Opening temp file: ${tempMessageFile}`);
 
   await vscode.workspace.fs.writeFile(
     vscode.Uri.file(tempMessageFile),
@@ -63,9 +59,12 @@ async function openTempFileWithMessage(message: string) {
     });
   });
 
+  logToOutputChannel(`Open file result: ${JSON.stringify(result)}`);
+
   saveHandler?.dispose();
   closeHandler?.dispose();
 
+  logToOutputChannel(`Deleting temp file: ${tempMessageFile}`);
   await vscode.workspace.fs.delete(vscode.Uri.file(tempMessageFile));
 
   return result;
@@ -73,27 +72,27 @@ async function openTempFileWithMessage(message: string) {
 
 export async function generateAiCommitCommand() {
   try {
+    logToOutputChannel("Starting generateAiCommitCommand");
+
     const gitExtension =
       vscode.extensions.getExtension<GitExtension>("vscode.git");
 
     if (!gitExtension) {
-      vscode.window.showErrorMessage("Git extension is not installed");
-      return;
+      throw new Error("Git extension is not installed");
     }
 
     if (!gitExtension.isActive) {
+      logToOutputChannel("Activating git extension");
       await gitExtension.activate();
     }
 
     if (!isValidApiKey()) {
-      await vscode.commands.executeCommand("setOpenaiApiKey");
+      logToOutputChannel("OpenAI API Key is not set. Asking user to set it.");
+      await vscode.commands.executeCommand("gptcommit.setOpenAIApiKey");
     }
 
     if (!isValidApiKey()) {
-      vscode.window.showErrorMessage(
-        "You should set OpenAi API Key before using extension!"
-      );
-      return;
+      throw new Error("You should set OpenAi API Key before using extension!");
     }
 
     const configuration = getConfiguration();
@@ -105,7 +104,6 @@ export async function generateAiCommitCommand() {
       messageGenerator,
       diffProvider,
       commitMessageWriter,
-      vscode.window.showErrorMessage,
       async (message) => {
         switch (configuration.general.messageApproveMethod) {
           case "Quick pick":
@@ -134,6 +132,8 @@ export async function generateAiCommitCommand() {
 
     const delimeter = configuration.appearance.delimeter;
 
+    logToOutputChannel("Running generateCompletionFlow");
+
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
@@ -155,13 +155,23 @@ export async function generateAiCommitCommand() {
       }
     );
   } catch (error: any) {
-    const errorMessage = error?.response?.data?.error?.message;
-
-    if (errorMessage) {
-      vscode.window.showErrorMessage(errorMessage);
+    if (error.isAxiosError && error.response?.data?.error?.message) {
+      logToOutputChannel(
+        `OpenAI API error: ${error.response.data.error.message}`
+      );
+      vscode.window.showErrorMessage(
+        `OpenAI API error: ${error.response.data.error.message}`
+      );
       return;
     }
 
+    if (error instanceof Error) {
+      logToOutputChannel(`Error: ${error.message}`);
+      vscode.window.showErrorMessage(error.message);
+      return;
+    }
+
+    logToOutputChannel(`Something went wrong. Please try again.`);
     vscode.window.showErrorMessage("Something went wrong. Please try again.");
     return;
   }

@@ -15,7 +15,6 @@ export class GenerateCompletionFlow
     private readonly msgGenerator: MsgGenerator,
     private readonly diffProvider: DiffProvider,
     private readonly commitMessageWriter: CommitMessageWriter,
-    private readonly onError: (message: string) => Thenable<any>,
     private readonly onSelectMessage: (message: string) => Promise<{
       result: boolean;
       edited: boolean;
@@ -31,10 +30,9 @@ export class GenerateCompletionFlow
     const diff = await this.diffProvider.getStagedDiff();
 
     if (!diff || diff.trim() === "") {
-      this.onError(
+      throw new Error(
         "No staged changes found. Make sure to stage your changes with `git add`."
       );
-      return;
     }
 
     const commitMessage = await this.msgGenerator.generate(
@@ -43,8 +41,7 @@ export class GenerateCompletionFlow
     );
 
     if (!commitMessage) {
-      this.onError("No commit message were generated. Try again.");
-      return;
+      throw new Error("No commit message were generated. Try again.");
     }
 
     const { result, edited, editedMessage } = await this.onSelectMessage(
@@ -52,8 +49,7 @@ export class GenerateCompletionFlow
     );
 
     if (!result) {
-      this.onError("User rejected commit message.");
-      return;
+      throw new Error("User rejected commit message.");
     }
 
     if (edited && editedMessage != null && editedMessage.trim() !== "") {

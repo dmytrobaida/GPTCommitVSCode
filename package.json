@@ -64,8 +64,7 @@
         "gptcommit.general.generator": {
           "type": "string",
           "enum": [
-            "ChatGPT",
-            "Custom"
+            "ChatGPT"
           ],
           "default": "ChatGPT",
           "description": "Generator used to create commit messages"
